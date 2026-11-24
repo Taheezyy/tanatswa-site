@@ -11,6 +11,9 @@
   // Only allow https links coming from config.js.
   function safeUrl(u) { return typeof u === "string" && /^https:\/\//i.test(u) ? u : null; }
 
+  // A typo in config.js must not hide the whole product: anything that is not a list counts as empty.
+  function list(value) { return Array.isArray(value) ? value : []; }
+
   // Small helper: create an element with a class and optional text.
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -23,8 +26,8 @@
     img.src = data.src;
     img.alt = data.alt || "";
     if (!data.alt) console.warn("config.js: image is missing alt text:", data.src);
-    if (typeof data.width === "number") img.width = data.width;
-    if (typeof data.height === "number") img.height = data.height;
+    if (typeof data.width === "number") img.width = data.width; else img.removeAttribute("width");
+    if (typeof data.height === "number") img.height = data.height; else img.removeAttribute("height");
   }
 
   /* Zoom viewer: one <dialog> shared by every product image.
@@ -36,23 +39,21 @@
     var dialog = el("dialog", "zoom");
     dialog.setAttribute("aria-label", "Zoomed product image");
     var bar = el("div", "zoom__bar");
-    var hint = el("p", "zoom__hint",
-      (window.matchMedia("(hover: hover)").matches ? "Click" : "Tap") + " to zoom. Drag to move.");
-    function button(cls, label, text) {
-      var b = el("button", "zoom__btn " + cls, text);
+    var hint = el("p", "zoom__hint");
+    function button(label, text) {
+      var b = el("button", "zoom__btn", text);
       b.type = "button";
       b.setAttribute("aria-label", label);
       bar.appendChild(b);
       return b;
     }
     bar.appendChild(hint);
-    var outBtn = button("", "Zoom out", "\u2212");
-    var inBtn = button("", "Zoom in", "+");
-    var closeBtn = button("", "Close", "\u00d7");
+    var outBtn = button("Zoom out", "\u2212");
+    var inBtn = button("Zoom in", "+");
+    var closeBtn = button("Close", "\u00d7");
     var view = el("div", "zoom__view");
     view.tabIndex = 0;
     view.setAttribute("role", "region");
-    view.setAttribute("aria-label", "Image. Use arrow keys to move, plus and minus to zoom.");
     var img = el("img", "zoom__img");
     img.draggable = false;
     view.appendChild(img);
@@ -77,10 +78,15 @@
       var after = img.getBoundingClientRect();
       view.scrollLeft += after.left + fx * after.width - cx;
       view.scrollTop += after.top + fy * after.height - cy;
-      var zoomed = width > fit + 1;
+      var zoomed = width > fit + 1, atMax = width >= max - 1;
       view.classList.toggle("is-zoomed", zoomed);
+      var act = window.matchMedia("(hover: hover)").matches ? "Click" : "Tap";
+      hint.textContent = zoomed ? act + " to zoom out. Drag to move." : act + " to zoom in.";
+      // A button that disables itself drops keyboard focus, so move it first.
+      var focused = document.activeElement;
+      if ((focused === outBtn && !zoomed) || (focused === inBtn && atMax)) view.focus({ preventScroll: true });
       outBtn.disabled = !zoomed;
-      inBtn.disabled = width >= max - 1;
+      inBtn.disabled = atMax;
     }
     function measure() {
       fit = Math.min(view.clientWidth, view.clientHeight / ratio);
@@ -94,6 +100,7 @@
     function step(factor) { var c = centre(); setWidth(width * factor, c[0], c[1]); }
 
     function open(data, pageImg, e) {
+      if (dialog.open) return;
       opener = e && e.currentTarget;
       var t = ++token;
       var o = pageImg.getBoundingClientRect();
@@ -101,19 +108,23 @@
       var tapped = e && e.detail > 0 && o.width;
       var fx = tapped ? (e.clientX - o.left) / o.width : 0.5;
       var fy = tapped ? (e.clientY - o.top) / o.height : 0.5;
-      ratio = (data.height / data.width) || (pageImg.naturalHeight / pageImg.naturalWidth) || 0.75;
-      base = (data.width || pageImg.naturalWidth || 1000) * (data.zoomSrc ? 2 : 1);
+      var w = data.width > 0 ? Number(data.width) : 0;
+      var h = data.height > 0 ? Number(data.height) : 0;
+      ratio = (w && h) ? h / w : (pageImg.naturalHeight / pageImg.naturalWidth) || 0.75;
+      base = (w || pageImg.naturalWidth || 1000) * (data.zoomSrc ? 2 : 1);
       img.alt = data.alt || "";
+      view.setAttribute("aria-label", (data.alt || "Product image") + ". Arrow keys move, plus and minus zoom.");
       img.src = data.src;
       // Show the small picture at once, swap in the sharp one when it arrives.
       if (data.zoomSrc) {
         var big = new Image();
         big.onload = function () { if (t === token && dialog.open) img.src = big.src; };
+        big.onerror = function () { console.warn("config.js: zoomSrc could not be loaded:", data.zoomSrc); };
         big.src = data.zoomSrc;
       }
       img.style.width = img.style.height = "0px";
-      document.documentElement.classList.add("zoom-lock");
       dialog.showModal();
+      document.documentElement.classList.add("zoom-lock");
       view.focus({ preventScroll: true });
       measure();
       // On phones the fitted picture is barely bigger than on the page,
@@ -128,6 +139,8 @@
     closeBtn.addEventListener("click", function () { dialog.close(); });
     dialog.addEventListener("close", function () {
       token++;
+      drag = null;
+      moved = false;
       document.documentElement.classList.remove("zoom-lock");
       if (opener) opener.focus({ preventScroll: true }); // Safari does not do this by itself
     });
@@ -141,11 +154,12 @@
     var drag = null, moved = false;
     view.addEventListener("pointerdown", function (e) {
       moved = false;
-      if (e.pointerType !== "mouse" || e.button !== 0 || e.target !== img) return;
+      if (e.pointerType !== "mouse" || e.button !== 0 || e.ctrlKey || e.target !== img) return;
       drag = { x: e.clientX, y: e.clientY, l: view.scrollLeft, t: view.scrollTop };
     });
     window.addEventListener("pointermove", function (e) {
       if (!drag) return;
+      if (!(e.buttons & 1)) { drag = null; return; }   // released outside the window
       var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 5) moved = true;
       if (moved) { view.scrollLeft = drag.l - dx; view.scrollTop = drag.t - dy; }
@@ -172,7 +186,7 @@
   var zoom = createZoom();
 
   function buildGallery(product, mainFrame, thumbs) {
-    var imgs = (product.images || []).filter(Boolean);
+    var imgs = list(product.images).filter(Boolean);
     if (!imgs.length) return;
     var mainImg = el("img", "product__main-img");
     var current = imgs[0];
@@ -180,12 +194,16 @@
 
     // The main image opens the zoom viewer (plain image in very old browsers).
     var zoomBtn = null;
+    function nameZoom() {
+      if (zoomBtn) zoomBtn.setAttribute("aria-label", "Zoom image: " + (current.alt || "product image"));
+    }
     if (zoom) {
       zoomBtn = el("button", "zoom-open");
       zoomBtn.type = "button";
+      zoomBtn.setAttribute("aria-haspopup", "dialog");
       zoomBtn.appendChild(mainImg);
-      var badge = el("span", "zoom-open__badge", "Zoom");
-      zoomBtn.appendChild(badge);
+      zoomBtn.appendChild(el("span", "zoom-open__badge", "Zoom"));
+      nameZoom();
       zoomBtn.addEventListener("click", function (e) { zoom.open(current, mainImg, e); });
       mainFrame.appendChild(zoomBtn);
     } else {
@@ -198,6 +216,7 @@
       var btn = el("button", "thumb");
       btn.type = "button";
       btn.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+      btn.setAttribute("aria-label", "Show image " + (i + 1) + " of " + imgs.length + (data.alt ? ": " + data.alt : ""));
       var img = el("img");
       setImage(img, data);
       img.loading = "lazy";
@@ -205,6 +224,7 @@
       btn.addEventListener("click", function () {
         current = data;
         setImage(mainImg, data);
+        nameZoom();
         buttons.forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
       });
       buttons.push(btn);
@@ -219,14 +239,17 @@
     var mainFrame = el("div", "product__image frame");
     var thumbs = el("div", "product__thumbs");
     thumbs.setAttribute("role", "group");
-    thumbs.setAttribute("aria-label", "Product images");
+    thumbs.setAttribute("aria-label", "Product image thumbnails");
     buildGallery(p, mainFrame, thumbs);
 
     var details = el("div", "product__details");
-    var name = el("h2", "product__name", p.name);
+    ["name", "price", "description"].forEach(function (key) {
+      if (!p[key]) console.warn("config.js: product #" + (i + 1) + " has no " + key + ".");
+    });
+    var name = el("h2", "product__name", p.name || "Product");
     name.id = "name-product-" + i;
     details.appendChild(name);
-    details.appendChild(el("p", "product__price", p.price));
+    if (p.price) details.appendChild(el("p", "product__price", p.price));
 
     var buy = el("a", "btn btn--buy", p.buyLabel || "Buy");
     var href = safeUrl(p.buyUrl);
@@ -242,26 +265,25 @@
     buy.setAttribute("aria-describedby", note.id);
     details.appendChild(buy);
     details.appendChild(note);
-    details.appendChild(el("p", "product__desc", p.description));
+    if (p.description) details.appendChild(el("p", "product__desc", p.description));
 
     var incTitle = el("h3", "product__subhead", "What’s included");
     details.appendChild(incTitle);
-    var list = el("ul", "included");
-    (p.included || []).forEach(function (item) { list.appendChild(el("li", "", item)); });
-    details.appendChild(list);
+    var included = el("ul", "included");
+    list(p.included).forEach(function (item) { included.appendChild(el("li", "", item)); });
+    details.appendChild(included);
     if (p.compatibility) details.appendChild(el("p", "product__compat", p.compatibility));
 
     // DOM order = phone order: image, thumbnails right under it (so a tap shows
     // its result on screen), then details.
-    article.appendChild(mainFrame);
+    if (mainFrame.children.length) article.appendChild(mainFrame);
     if (thumbs.children.length) article.appendChild(thumbs);
     article.appendChild(details);
     return article;
   }
 
-  var list = (cfg && Array.isArray(cfg.products)) ? cfg.products : [];
   var shown = 0;
-  list.forEach(function (p, i) {
+  list(cfg && cfg.products).forEach(function (p, i) {
     try {
       root.appendChild(buildProduct(p, i));
       shown++;
@@ -273,7 +295,7 @@
   var fallback = root.querySelector(".products-fallback");
   if (shown && fallback) fallback.parentNode.removeChild(fallback);
 
-  if (cfg && cfg.comingSoon) {
+  if (cfg && cfg.comingSoon && cfg.comingSoon.heading) {
     var soon = el("section", "coming-soon");
     soon.setAttribute("aria-labelledby", "soon-title");
     var h = el("h2", "coming-soon__title", cfg.comingSoon.heading);

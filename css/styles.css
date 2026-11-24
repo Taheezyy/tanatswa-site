@@ -9,7 +9,7 @@
   --text: #e6e6ea;          /* body text */
   --muted: #a8a8b3;         /* secondary text (do not go darker: contrast) */
   --gold: #f2c27e;          /* buttons, focus ring, links */
-  --gold-soft: #e8c48f;     /* logo dot, hover colour */
+  --gold-soft: #e8c48f;     /* hover colour, bullets, selected thumbnail */
   --line: rgba(232, 196, 143, 0.35);
   --header-h: 64px;
   --vh: 1vh;                /* fallback for browsers without svh */
@@ -139,8 +139,6 @@ a { color: var(--gold); }
   --u: min((100vw - 40px) / 723, var(--vh) * 100 / 820, 1.2px);
   position: relative;
   overflow: hidden;                   /* fallback: clips the big glow so there is no sideways scroll */
-  overflow-x: clip;                   /* modern browsers: clip sideways only, so the glow can reach behind the header */
-  overflow-y: visible;
   min-height: calc(var(--vh) * 100 - var(--header-h));
   display: flex;
   flex-direction: column;
@@ -149,7 +147,9 @@ a { color: var(--gold); }
   text-align: center;
   padding: 8px 20px calc(var(--vh) * 7);
 }
-/* Home: the header sits on top of the 100svh screen (header + hero = one screen) */
+/* Modern browsers: clip sideways only, so the glow can reach behind the header.
+   Kept in @supports because older Safari would turn "visible" into a scroll box. */
+@supports (overflow-x: clip) { .hero { overflow-x: clip; overflow-y: visible; } }
 
 .logo {
   position: relative;
@@ -244,7 +244,7 @@ a { color: var(--gold); }
 }
 
 /* Reveal, CSS only. Content is in the HTML from the start.
-   0-1.2s glow, 0.4-1.2s disc, 0.9-1.8s wordmark + tagline, 1.7-2.5s button. */
+   0-1.2s glow, 0.4-1.2s disc, 0.9-1.8s wordmark + tagline, 1.4-2.2s button. */
 @keyframes glow-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
@@ -254,7 +254,7 @@ a { color: var(--gold); }
 .sky { animation: fade-in 1.2s ease-out both; }
 .disc { animation: fade-in 0.8s ease-out 0.4s both; }
 .reveal-text { animation: rise-in 0.9s ease-out 0.9s both; }
-.reveal-button { animation: fade-in 0.8s ease-out 1.7s both; }
+.reveal-button { animation: fade-in 0.8s ease-out 1.4s both; }
 
 /* ---------- Footer ---------- */
 .site-footer {
@@ -372,7 +372,7 @@ a { color: var(--gold); }
   overscroll-behavior: contain;
 }
 .zoom__view:focus-visible { outline-offset: -3px; }
-.zoom__img { flex: none; margin: auto; max-width: none; cursor: zoom-in; user-select: none; -webkit-user-select: none; }
+.zoom__img { flex: none; margin: auto; max-width: none; object-fit: contain; cursor: zoom-in; user-select: none; -webkit-user-select: none; }
 .is-zoomed .zoom__img { cursor: grab; }
 .is-zoomed .zoom__img:active { cursor: grabbing; }
 
