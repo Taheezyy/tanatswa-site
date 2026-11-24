@@ -1,0 +1,338 @@
+/* =====================================================================
+   Tanatswa Inc - styles for both pages.
+   Colours are defined once in :root, change them there.
+   ===================================================================== */
+
+:root {
+  --bg: #050507;            /* page background */
+  --surface: #0c0c11;       /* cards */
+  --text: #e6e6ea;          /* body text */
+  --muted: #a8a8b3;         /* secondary text (do not go darker: contrast) */
+  --gold: #f2c27e;          /* buttons, focus ring, links */
+  --gold-soft: #e8c48f;     /* logo dot, hover colour */
+  --line: rgba(232, 196, 143, 0.35);
+  --header-h: 64px;
+  --vh: 1vh;                /* fallback for browsers without svh */
+  --font: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@supports (height: 100svh) { :root { --vh: 1svh; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+}
+main { flex: 1 0 auto; }
+
+img { max-width: 100%; height: auto; }
+
+a { color: var(--gold); }
+
+/* Keyboard focus: always visible, never removed. */
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Skip link: hidden until it receives keyboard focus. */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -80px;
+  z-index: 10;
+  padding: 12px 16px;
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 8px;
+}
+.skip-link:focus { top: 12px; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1080px;
+  width: 100%;
+  min-height: var(--header-h);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.header-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.header-logo__dot { /* small gold dot after the wordmark, like the logo */
+  display: inline-block;
+  width: 0.22em; height: 0.22em;
+  margin-left: 0.12em;
+  border-radius: 50%;
+  background: var(--gold-soft);
+}
+/* Tiny eclipse mark (32px) */
+.mini-eclipse {
+  position: relative;
+  flex: none;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe0a8, #f2b35e 55%, #b8742f);
+  box-shadow: 0 0 10px rgba(255, 176, 90, 0.5);
+}
+.mini-eclipse::after {
+  content: "";
+  position: absolute;
+  inset: 2px -1px -1px 2px;
+  border-radius: 50%;
+  background: #15110f;
+}
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+  text-underline-offset: 6px;
+}
+.site-nav a:hover { color: var(--gold); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  min-width: 200px;
+  padding: 0 28px;
+  border-radius: 12px;
+  background: var(--gold);
+  color: #050507;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.btn:hover { background: var(--gold-soft); transform: translateY(-2px); }
+
+/* ---------- Home hero ---------- */
+.hero {
+  --d: clamp(200px, 26.5vw, 340px);   /* eclipse diameter */
+  position: relative;
+  overflow: hidden;                   /* fallback: clips the big glow so there is no sideways scroll */
+  overflow-x: clip;                   /* modern browsers: clip sideways only, so the glow can reach behind the header */
+  overflow-y: visible;
+  min-height: calc(var(--vh) * 100 - var(--header-h));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* eclipse centre sits at about 38% of the screen height */
+  padding: max(8px, calc(var(--vh) * 38 - var(--header-h) - var(--d) / 2)) 20px 48px;
+  background: radial-gradient(ellipse at 90% 100%, rgba(26, 30, 58, 0.45), transparent 55%), var(--bg);
+}
+/* Home: the header sits on top of the 100svh screen (header + hero = one screen) */
+
+.eclipse {
+  position: relative;
+  left: calc(var(--d) * 0.1);          /* disc sits slightly right of centre */
+  flex: none;
+  width: var(--d);
+  height: var(--d);
+}
+.eclipse > * { position: absolute; border-radius: 50%; }
+.glow {
+  inset: calc(var(--d) * -0.9);
+  border-radius: 0;
+  /* two soft layers that both fade to nothing before the edge of the box:
+     an even halo, plus a brighter patch in the upper-left */
+  background:
+    radial-gradient(circle closest-side at 36% 38%, rgba(255, 170, 70, 0.34), transparent),
+    radial-gradient(circle closest-side at 50% 50%,
+      rgba(230, 130, 50, 0.50) 0%,
+      rgba(200, 105, 40, 0.34) 30%,
+      rgba(120, 62, 22, 0.16) 58%,
+      rgba(40, 20, 10, 0.05) 80%,
+      transparent 100%);
+}
+.rim {                                  /* thin bright gold edge, upper-left */
+  inset: 0;
+  left: calc(var(--d) * -0.02);
+  top: calc(var(--d) * -0.02);
+  background: linear-gradient(135deg, #ffe0a8, #f2b35e 55%, #b8742f);
+  box-shadow: 0 0 calc(var(--d) * 0.08) rgba(255, 180, 90, 0.55);
+}
+.disc {
+  inset: 0;
+  background: radial-gradient(circle at 50% 35%, #2a2420 0%, #171310 60%, #0c0a09 100%);
+}
+
+.wordmark {
+  position: relative;
+  z-index: 1;
+  margin: calc(var(--d) * -0.12) 0 0;  /* overlaps the bottom of the disc slightly */
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+.wordmark .dot {
+  display: inline-block;
+  width: 0.2em; height: 0.2em;
+  margin: 0 0.16em 0 0.18em;
+  border-radius: 50%;
+  background: var(--gold-soft);
+}
+.wordmark .inc {
+  font-size: 0.26em;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+}
+.tagline {
+  position: relative;
+  z-index: 1;
+  margin: 20px 0 0;
+  font-size: 16px;
+  color: var(--text);
+}
+.hero .btn { margin-top: 40px; }
+
+@media (min-width: 700px) {
+  .tagline { font-size: 20px; margin-top: 24px; }
+  .hero .btn { margin-top: 44px; }
+}
+
+/* Reveal, CSS only. Content is in the HTML from the start.
+   0-1.2s glow, 0.9-1.8s wordmark + tagline, 1.7-2.5s button. */
+@keyframes glow-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
+
+.glow { animation: glow-in 1.2s ease-out both, breathe 7s ease-in-out 1.2s infinite alternate; }
+.reveal-text { animation: rise-in 0.9s ease-out 0.9s both; }
+.reveal-button { animation: fade-in 0.8s ease-out 1.7s both; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: 56px;
+  border-top: 1px solid rgba(232, 196, 143, 0.2);
+  padding: 32px 0 40px;
+}
+.site-footer__inner { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+.site-footer h2 { margin: 0 0 8px; font-size: 20px; font-weight: 600; }
+.site-footer p { margin: 0; color: var(--muted); }
+.site-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 500;
+}
+.site-footer .copyright { margin-top: 12px; font-size: 15px; }
+.home .site-footer { margin-top: 0; position: relative; z-index: 1; background: var(--bg); }
+
+/* ---------- Products page ---------- */
+.page { max-width: 1080px; margin: 0 auto; padding: 8px 16px 0; }
+.page h1 { margin: 8px 0 20px; font-size: 32px; font-weight: 600; line-height: 1.2; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(232, 196, 143, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+}
+.frame {
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #0a0a0e;
+}
+.frame img, .thumb img { display: block; width: 100%; height: auto; border-radius: 6px; }
+
+.product { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+.product__name { margin: 0; font-size: 28px; font-weight: 600; line-height: 1.2; }
+.product__price { margin: 6px 0 0; font-size: 22px; font-weight: 600; color: #fff; }
+.product__desc { margin: 12px 0 20px; }
+.btn--buy { width: 100%; }
+.buy-note { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+.product__subhead { margin: 28px 0 10px; font-size: 18px; font-weight: 600; }
+.included { margin: 0; padding: 0; list-style: none; }
+.included li { position: relative; padding: 4px 0 4px 24px; }
+.included li::before { /* hollow gold ring bullet (the Buy button stays the only solid gold item) */
+  content: "";
+  position: absolute;
+  left: 2px; top: 0.85em;
+  width: 8px; height: 8px;
+  border: 2px solid var(--gold-soft);
+  border-radius: 50%;
+}
+.product__compat { margin: 14px 0 0; color: var(--muted); }
+
+.product__thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.thumb {
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #0a0a0e;
+  cursor: pointer;
+}
+.thumb[aria-pressed="true"] { border-color: var(--gold-soft); border-width: 2px; padding: 3px; }
+.thumb:hover { border-color: var(--gold-soft); }
+
+.coming-soon {
+  margin-top: 24px;
+  padding: 24px 20px;
+  border: 2px dashed rgba(232, 196, 143, 0.4);
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+}
+.coming-soon__title { margin: 0 0 6px; font-size: 20px; font-weight: 500; color: #c9c9d1; }
+.coming-soon p { margin: 0; }
+
+@media (min-width: 900px) {
+  .page h1 { font-size: 40px; margin-bottom: 24px; }
+  .card { padding: 28px; }
+  .product {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-areas: "image details" "thumbs details";
+    column-gap: 36px;
+    align-items: start;
+  }
+  .product__image { grid-area: image; }
+  .product__thumbs { grid-area: thumbs; }
+  .product__details { grid-area: details; }
+  .btn--buy { max-width: 320px; }
+}
+
+/* ---------- Reduced motion: final state at once, no movement ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .btn:hover { transform: none; }
+}
