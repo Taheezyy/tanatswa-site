@@ -3,6 +3,15 @@
    Colours are defined once in :root, change them there.
    ===================================================================== */
 
+/* Outfit, hosted with the site (one variable file covers all weights used). Licence: assets/fonts/OFL.txt */
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../assets/fonts/outfit-latin.woff2") format("woff2");
+}
+
 :root {
   --bg: #050507;            /* page background */
   --surface: #0c0c11;       /* cards */

@@ -68,6 +68,6 @@ WhatsApp, Facebook and X need the **full web address** of the preview image, so 
 
 ## Notes
 
-- The site uses the Outfit font from Google Fonts and falls back to a standard sans-serif if it cannot load.
+- The site uses the Outfit font, hosted in `assets/fonts/` (licence in `OFL.txt`, keep it there). It covers Latin letters; other alphabets such as Arabic fall back to the device's own font.
 - The Home animation respects the visitor's "reduce motion" setting.
 - Images were made from the listing artwork. The "What's included" image was edited to remove an unverified delivery claim, and the cover was cropped to remove the app badges. The apps the kit works with are listed in `js/config.js` (`compatibility`).
