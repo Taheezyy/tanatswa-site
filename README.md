@@ -2,13 +2,15 @@
 
 A two-page static site (Home and Products). No build step, no framework: you edit plain files, commit and push.
 
+Live at https://taheezyy.github.io/tanatswa-site/
+
 ## Before you share the link
 
-- [ ] Set the absolute `og:image` and `twitter:image` addresses in **both** pages, and uncomment and fill `og:url` (`https://<username>.github.io/<repo>/`). See step 4. Until then the share preview will show no picture.
-- [ ] Turn on two-factor authentication (2FA) on your GitHub and Payhip accounts.
+- [x] Share-preview addresses are set in both pages (see step 4).
+- [x] Turn on two-factor authentication (2FA) on your GitHub and Payhip accounts.
 - [ ] Open the live site on a real iPhone and a real Android phone, and from a link in WhatsApp and Instagram.
 
-IMPORTANT: this repository is private for now, but everything in it becomes public once the site is published. Never put the kit's `.docx` or `.zip` files (or anything private) in it. Payhip delivers the files; this site only links to Payhip.
+IMPORTANT: this repository is **public**, including its history. Never put the kit's `.docx` or `.zip` files (or anything private) in it. Payhip delivers the files; this site only links to Payhip.
 
 ## Folder map
 
@@ -50,21 +52,17 @@ git commit -m "Describe what you changed"
 git push
 ```
 
-To put the site live with GitHub Pages:
+The site is published with GitHub Pages (**Settings > Pages**: deploy from branch **main**, folder **/ (root)**). Every push to `main` updates the live site after a minute or two.
 
-1. On a free GitHub account, Pages needs a **public** repository. Check first that nothing private is in the files or the commit history.
-2. Go to **Settings > Pages**. Under **Build and deployment** choose **Deploy from a branch**, branch **main**, folder **/ (root)**, then Save.
-3. After a minute the site is live at `https://YOUR-USERNAME.github.io/YOUR-REPO/`. Every push to `main` updates it.
+## 4. Share preview image
 
-## 4. Fix the share preview image (og:image)
+WhatsApp, Facebook and X need **full web addresses**. They are set for https://taheezyy.github.io/tanatswa-site/. If the site ever moves (new repository name, username or domain), update these three lines in the `<head>` of **both** `index.html` and `products.html`:
 
-WhatsApp, Facebook and X need the **full web address** of the preview image, so the relative path in the pages will not show a picture until you set it.
+- `og:url`
+- `og:image`
+- `twitter:image`
 
-1. Work out your address: `https://YOUR-USERNAME.github.io/YOUR-REPO/assets/og-image.jpg` (use your real username and repo name).
-2. In both `index.html` and `products.html`, find these two lines in the `<head>` and replace `assets/og-image.jpg` with that full address:
-   - `<meta property="og:image" content="assets/og-image.jpg">`
-   - `<meta name="twitter:image" content="assets/og-image.jpg">`
-3. Commit and push. Social apps cache previews, so a new link may take a while to refresh.
+Then commit and push. Social apps cache previews, so a change may take a while to show.
 
 ## Notes
 
