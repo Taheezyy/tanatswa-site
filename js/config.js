@@ -45,11 +45,12 @@ window.TANATSWA = {
         "3 Classic CVs with photo",
         "3 ATS-friendly CVs",
         "3 matching cover letters",
-        "3 colours: Navy, Charcoal, Black"
+        "3 colours: Navy, Charcoal, Black",
+        "Start Here guide (PDF)"
       ],
 
       // Single line under the list.
-      compatibility: "Works with Microsoft Word and WPS Office",
+      compatibility: "Works with Microsoft Word, WPS Office and Google Docs",
 
       // Pictures. The FIRST one is the large main image; every image also
       // becomes a clickable thumbnail. width/height are the real pixel size

@@ -58,4 +58,4 @@ WhatsApp, Facebook and X need the **full web address** of the preview image, so 
 
 - The site uses the Outfit font from Google Fonts and falls back to a standard sans-serif if it cannot load.
 - The Home animation respects the visitor's "reduce motion" setting.
-- Images were made from the listing artwork. The "What's included" image was edited to remove an unverified delivery claim, and the cover was cropped to remove the app badges, so the site only claims Word and WPS Office.
+- Images were made from the listing artwork. The "What's included" image was edited to remove an unverified delivery claim, and the cover was cropped to remove the app badges. The apps the kit works with are listed in `js/config.js` (`compatibility`).
