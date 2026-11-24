@@ -86,23 +86,18 @@ a { color: var(--gold); }
   width: 0.22em; height: 0.22em;
   margin-left: 0.12em;
   border-radius: 50%;
-  background: var(--gold-soft);
+  background: var(--gold);
 }
-/* Tiny eclipse mark (32px) */
+/* Tiny eclipse mark: the same disc, rim and halo as the logo */
 .mini-eclipse {
-  position: relative;
   flex: none;
-  width: 32px; height: 32px;
+  width: 28px; height: 28px;
+  margin-left: 3px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffe0a8, #f2b35e 55%, #b8742f);
-  box-shadow: 0 0 10px rgba(255, 176, 90, 0.5);
-}
-.mini-eclipse::after {
-  content: "";
-  position: absolute;
-  inset: 2px -1px -1px 2px;
-  border-radius: 50%;
-  background: #15110f;
+  background: radial-gradient(circle at 42% 40%, #2a2522 0%, #141210 70%, #0c0b0a 100%);
+  box-shadow:
+    -1.5px -0.7px 0 0.6px rgba(255, 214, 150, 0.95),
+    -1px -0.5px 8px 1px rgba(255, 170, 80, 0.6);
 }
 .site-nav a {
   display: inline-flex;
@@ -135,9 +130,13 @@ a { color: var(--gold); }
 }
 .btn:hover { background: var(--gold-soft); transform: translateY(-2px); }
 
-/* ---------- Home hero ---------- */
+/* ---------- Home hero ----------
+   Rebuilt from the Tanatswa Inc logo artboard (1200 x 900). --u is one artboard
+   pixel, so every size, offset, shadow and gradient stop keeps the logo's
+   proportions on any screen. The logo box is 723 x 430 artboard pixels:
+   as wide as the wordmark, as tall as the disc. */
 .hero {
-  --d: clamp(200px, 26.5vw, 340px);   /* eclipse diameter */
+  --u: min((100vw - 40px) / 723, var(--vh) * 100 / 820, 1.2px);
   position: relative;
   overflow: hidden;                   /* fallback: clips the big glow so there is no sideways scroll */
   overflow-x: clip;                   /* modern browsers: clip sideways only, so the glow can reach behind the header */
@@ -146,93 +145,114 @@ a { color: var(--gold); }
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  /* eclipse centre sits at about 38% of the screen height */
-  padding: max(8px, calc(var(--vh) * 38 - var(--header-h) - var(--d) / 2)) 20px 48px;
-  background: radial-gradient(ellipse at 90% 100%, rgba(26, 30, 58, 0.45), transparent 55%), var(--bg);
+  padding: 8px 20px calc(var(--vh) * 7);
 }
 /* Home: the header sits on top of the 100svh screen (header + hero = one screen) */
 
-.eclipse {
+.logo {
   position: relative;
-  left: calc(var(--d) * 0.1);          /* disc sits slightly right of centre */
   flex: none;
-  width: var(--d);
-  height: var(--d);
+  width: calc(723 * var(--u));
+  height: calc(430 * var(--u));
 }
-.eclipse > * { position: absolute; border-radius: 50%; }
-.glow {
-  inset: calc(var(--d) * -0.9);
-  border-radius: 0;
-  /* two soft layers that both fade to nothing before the edge of the box:
-     an even halo, plus a brighter patch in the upper-left */
-  background:
-    radial-gradient(circle closest-side at 36% 38%, rgba(255, 170, 70, 0.34), transparent),
-    radial-gradient(circle closest-side at 50% 50%,
-      rgba(230, 130, 50, 0.50) 0%,
-      rgba(200, 105, 40, 0.34) 30%,
-      rgba(120, 62, 22, 0.16) 58%,
-      rgba(40, 20, 10, 0.05) 80%,
-      transparent 100%);
+.eclipse { position: absolute; inset: 0; pointer-events: none; }
+.eclipse > * { position: absolute; }
+.sky {                                  /* blue light, lower right (fitted to the exported logo image) */
+  left: calc(297.5 * var(--u));
+  top: calc(-55 * var(--u));
+  width: calc(844 * var(--u));
+  height: calc(844 * var(--u));
+  background: radial-gradient(circle closest-side,
+    rgba(36, 64, 120, 0.29) 0%,
+    rgba(24, 40, 80, 0.28) 34.8%,
+    rgba(0, 0, 0, 0) 100%);
 }
-.rim {                                  /* thin bright gold edge, upper-left */
-  inset: 0;
-  left: calc(var(--d) * -0.02);
-  top: calc(var(--d) * -0.02);
-  background: linear-gradient(135deg, #ffe0a8, #f2b35e 55%, #b8742f);
-  box-shadow: 0 0 calc(var(--d) * 0.08) rgba(255, 180, 90, 0.55);
+.glow {                                 /* warm light, upper left of the disc */
+  left: calc(-278.5 * var(--u));
+  top: calc(-496 * var(--u));
+  width: calc(1280 * var(--u));
+  height: calc(1280 * var(--u));
+  background: radial-gradient(circle closest-side,
+    rgba(255, 186, 110, 0.55) 0%,
+    rgba(214, 120, 52, 0.28) 35.94%,
+    rgba(90, 40, 20, 0.12) 65.63%,
+    rgba(0, 0, 0, 0) 100%);
 }
-.disc {
-  inset: 0;
-  background: radial-gradient(circle at 50% 35%, #2a2420 0%, #171310 60%, #0c0a09 100%);
+.disc {                                 /* dark disc, gold rim on the left, soft halo */
+  left: calc(271.5 * var(--u));
+  top: 0;
+  width: calc(430 * var(--u));
+  height: calc(430 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 40%, #2a2522 0%, #141210 70%, #0c0b0a 100%);
+  box-shadow:
+    calc(-7 * var(--u)) calc(-3 * var(--u)) 0 calc(2 * var(--u)) rgba(255, 214, 150, 0.95),
+    calc(-14 * var(--u)) calc(-6 * var(--u)) calc(28 * var(--u)) calc(6 * var(--u)) rgba(255, 170, 80, 0.75),
+    0 0 calc(90 * var(--u)) calc(24 * var(--u)) rgba(240, 140, 60, 0.35),
+    0 0 calc(220 * var(--u)) calc(60 * var(--u)) rgba(200, 100, 40, 0.18);
 }
 
-.wordmark {
-  position: relative;
+.wordmark {                             /* runs across the disc */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(134 * var(--u));
   z-index: 1;
-  margin: calc(var(--d) * -0.12) 0 0;  /* overlaps the bottom of the disc slightly */
-  font-size: clamp(40px, 5vw, 64px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: calc(18 * var(--u));
+  margin: 0;
   font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
   color: #fff;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
   white-space: nowrap;
 }
+.wordmark__name { font-size: calc(150 * var(--u)); letter-spacing: calc(-4 * var(--u)); line-height: 0.8; }
 .wordmark .dot {
-  display: inline-block;
-  width: 0.2em; height: 0.2em;
-  margin: 0 0.16em 0 0.18em;
+  flex: none;
+  width: calc(30 * var(--u));
+  height: calc(30 * var(--u));
+  margin-bottom: calc(1 * var(--u));
   border-radius: 50%;
-  background: var(--gold-soft);
+  background: var(--gold);
 }
 .wordmark .inc {
-  font-size: 0.26em;
-  letter-spacing: 0.22em;
-  font-weight: 500;
+  margin-left: calc(8 * var(--u));
+  font-size: calc(33 * var(--u));
+  font-weight: 400;
+  letter-spacing: calc(6 * var(--u));
+  line-height: 1;
 }
 .tagline {
   position: relative;
   z-index: 1;
-  margin: 20px 0 0;
-  font-size: 16px;
+  margin: 32px 0 0;
+  font-size: 17px;
   color: var(--text);
 }
-.hero .btn { margin-top: 40px; }
+.hero .btn { position: relative; z-index: 1; margin-top: 28px; }
 
 @media (min-width: 700px) {
-  .tagline { font-size: 20px; margin-top: 24px; }
-  .hero .btn { margin-top: 44px; }
+  .tagline { font-size: 20px; }
+}
+@media (max-height: 480px) {            /* phone held sideways */
+  .hero { --u: min((100vw - 40px) / 723, var(--vh) * 100 / 960, 1.2px); padding-bottom: 12px; }
+  .tagline { margin-top: 14px; font-size: 16px; }
+  .hero .btn { margin-top: 12px; min-height: 48px; }
 }
 
 /* Reveal, CSS only. Content is in the HTML from the start.
-   0-1.2s glow, 0.9-1.8s wordmark + tagline, 1.7-2.5s button. */
+   0-1.2s glow, 0.4-1.2s disc, 0.9-1.8s wordmark + tagline, 1.7-2.5s button. */
 @keyframes glow-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
 
 .glow { animation: glow-in 1.2s ease-out both, breathe 7s ease-in-out 1.2s infinite alternate; }
+.sky { animation: fade-in 1.2s ease-out both; }
+.disc { animation: fade-in 0.8s ease-out 0.4s both; }
 .reveal-text { animation: rise-in 0.9s ease-out 0.9s both; }
 .reveal-button { animation: fade-in 0.8s ease-out 1.7s both; }
 
@@ -252,30 +272,114 @@ a { color: var(--gold); }
   font-weight: 500;
 }
 .site-footer .copyright { margin-top: 12px; font-size: 15px; }
-.home .site-footer { margin-top: 0; position: relative; z-index: 1; background: var(--bg); }
+.home .site-footer { margin-top: 0; position: relative; z-index: 1; }
 
 /* ---------- Products page ---------- */
 .page { max-width: 1080px; margin: 0 auto; padding: 8px 16px 0; }
-.page h1 { margin: 8px 0 20px; font-size: 32px; font-weight: 600; line-height: 1.2; }
+.page h1 { margin: 0 0 12px; font-size: 28px; font-weight: 600; line-height: 1.2; }
 
 .card {
   background: var(--surface);
   border: 1px solid rgba(232, 196, 143, 0.2);
   border-radius: 16px;
-  padding: 16px;
+  padding: 12px;
 }
 .frame {
-  padding: 8px;
+  padding: 4px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #0a0a0e;
 }
 .frame img, .thumb img { display: block; width: 100%; height: auto; border-radius: 6px; }
 
-.product { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
-.product__name { margin: 0; font-size: 28px; font-weight: 600; line-height: 1.2; }
-.product__price { margin: 6px 0 0; font-size: 22px; font-weight: 600; color: #fff; }
-.product__desc { margin: 12px 0 20px; }
+/* Main image: opens the zoom viewer */
+.zoom-open {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  cursor: zoom-in;
+  touch-action: manipulation;
+}
+.zoom-open__badge {
+  position: absolute;
+  right: 8px; bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(5, 5, 7, 0.82);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.zoom-open__badge::before { /* magnifier */
+  content: "";
+  width: 16px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='6.8' cy='6.8' r='5'/%3E%3Cpath d='M10.6 10.6 14.5 14.5M6.8 4.7v4.2M4.7 6.8h4.2'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Zoom viewer */
+.zoom-lock { overflow: hidden; }
+.zoom {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+.zoom[open] { display: flex; flex-direction: column; }
+.zoom::backdrop { background: var(--bg); }
+.zoom__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  padding-top: max(8px, env(safe-area-inset-top));
+  border-bottom: 1px solid rgba(232, 196, 143, 0.2);
+}
+.zoom__hint { flex: 1; min-width: 0; margin: 0; font-size: 14px; color: var(--muted); }
+.zoom__btn {
+  flex: none;
+  width: 48px; height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: #fff;
+  font: 500 24px/1 var(--font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.zoom__btn:hover { border-color: var(--gold-soft); }
+.zoom__btn:disabled { opacity: 0.4; cursor: default; border-color: var(--line); }
+.zoom__view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.zoom__view:focus-visible { outline-offset: -3px; }
+.zoom__img { flex: none; margin: auto; max-width: none; cursor: zoom-in; user-select: none; -webkit-user-select: none; }
+.is-zoomed .zoom__img { cursor: grab; }
+.is-zoomed .zoom__img:active { cursor: grabbing; }
+
+.product { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+.product__name { margin: 0; font-size: 26px; font-weight: 600; line-height: 1.2; }
+.product__price { margin: 2px 0 14px; font-size: 22px; font-weight: 600; color: #fff; }
+.product__desc { margin: 20px 0 0; }
 .btn--buy { width: 100%; }
 .buy-note { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
 .product__subhead { margin: 28px 0 10px; font-size: 18px; font-weight: 600; }
@@ -314,11 +418,14 @@ a { color: var(--gold); }
 .coming-soon p { margin: 0; }
 
 @media (min-width: 900px) {
-  .page h1 { font-size: 40px; margin-bottom: 24px; }
+  .page h1 { margin: 8px 0 24px; font-size: 40px; }
   .card { padding: 28px; }
+  .frame { padding: 8px; }
+  .product__name { font-size: 28px; }
   .product {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     grid-template-areas: "image details" "thumbs details";
+    grid-template-rows: auto 1fr;
     column-gap: 36px;
     align-items: start;
   }

@@ -30,7 +30,7 @@ Note: `index.html` and `products.html` also hold the same store link and email a
 
 ## 2. Add a new product
 
-1. Put the product pictures in `assets/` (WebP, about 1000 px wide, under 300 KB each).
+1. Put the product pictures in `assets/` (WebP, about 1000 px wide, under 300 KB each). Optional: add a copy at exactly twice the width and height and name it in `zoomSrc`, so the picture stays sharp when a visitor zooms in.
 2. In `js/config.js`, inside the `products: [ ... ]` list, copy the whole `{ ... }` block of the existing product.
 3. Paste it after the existing block and put a comma `,` between the two blocks.
 4. Give it a new unique `id` (lowercase, dashes), then change the name, price, description, `buyUrl`, list and images.

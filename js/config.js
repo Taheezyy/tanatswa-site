@@ -54,9 +54,12 @@ window.TANATSWA = {
       // Pictures. The FIRST one is the large main image; every image also
       // becomes a clickable thumbnail. width/height are the real pixel size
       // of the file (they stop the page jumping while it loads).
+      // zoomSrc is optional: a copy at exactly twice that size, used by the
+      // zoom viewer so small text stays sharp.
       images: [
         {
           src: "assets/cover.webp", width: 1000, height: 750,
+          zoomSrc: "assets/cover-large.webp",
           alt: "CV Builder Master Kit cover showing sample CV templates"
         },
         {
@@ -65,10 +68,12 @@ window.TANATSWA = {
         },
         {
           src: "assets/styles.webp", width: 1000, height: 750,
+          zoomSrc: "assets/styles-large.webp",
           alt: "The Classic and ATS-friendly CV styles side by side"
         },
         {
           src: "assets/colours.webp", width: 1000, height: 750,
+          zoomSrc: "assets/colours-large.webp",
           alt: "The three colour options: Navy, Charcoal and Black"
         }
       ]
