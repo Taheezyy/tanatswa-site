@@ -78,6 +78,44 @@ window.TANATSWA = {
           alt: "The three colour options: Navy, Charcoal and Black"
         }
       ]
+    },
+    {
+      id: "dubai-guide",
+      name: "Navigating Dubai: Free Guide",
+      price: "Free",
+      description:
+        "A phone-friendly PDF guide to your first week in Dubai, everyday " +
+        "savings, cheap days out and job hunting. Every price and rule is " +
+        "researched and dated.",
+
+      buyUrl: "https://payhip.com/b/Ierq8",
+      buyLabel: "Get it free",
+
+      included: [
+        "26-page PDF guide",
+        "Just arrived: SIM, Nol card, airport, Emirates ID",
+        "Living there: getting around and saving money",
+        "Visiting: sights by Metro and free days out",
+        "Job hunting: where to look and avoiding scams",
+        "50+ facts, each dated and linked to its source"
+      ],
+
+      compatibility: "PDF, reads on any phone",
+
+      images: [
+        {
+          src: "assets/dubai-guide-cover.webp", width: 1000, height: 750,
+          alt: "Navigating Dubai free guide cover, dark with gold lettering"
+        },
+        {
+          src: "assets/dubai-guide-inside.webp", width: 1000, height: 750,
+          alt: "Three inside pages of the guide shown on phone screens"
+        },
+        {
+          src: "assets/dubai-guide-parts.webp", width: 1000, height: 750,
+          alt: "The guide's four parts: Just arrived, Living there, Visiting and Job hunting"
+        }
+      ]
     }
   ]
 };
